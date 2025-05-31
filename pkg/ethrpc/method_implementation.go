@@ -22,15 +22,27 @@ func (c *Client) Balance(ctx context.Context, address, block string) (*string, e
 	return &result, err
 }
 
-func (c *Client) BlockByHash(ctx context.Context, blockHash string, withTxs bool) (*Block, error) {
+func (c *Client) BlockByHash(ctx context.Context, blockHash string) (*Block, error) {
 	result := Block{}
-	err := c.Do(ctx, "eth_getBlockByHash", []interface{}{blockHash, withTxs}, &result)
+	err := c.Do(ctx, "eth_getBlockByHash", []interface{}{blockHash, false}, &result)
 	return &result, err
 }
 
-func (c *Client) BlockByNumber(ctx context.Context, blockHex string, withTxs bool) (*Block, error) {
+func (c *Client) BlockWithTxsByHash(ctx context.Context, blockHash string) (*Block, error) {
+	result := Block{}
+	err := c.Do(ctx, "eth_getBlockByHash", []interface{}{blockHash, true}, &result)
+	return &result, err
+}
+
+func (c *Client) BlockByNumber(ctx context.Context, blockHex string) (*Block, error) {
 	var result Block
-	err := c.Do(ctx, "eth_getBlockByNumber", []interface{}{blockHex, withTxs}, &result)
+	err := c.Do(ctx, "eth_getBlockByNumber", []interface{}{blockHex, false}, &result)
+	return &result, err
+}
+
+func (c *Client) BlockWithTxsByNumber(ctx context.Context, blockHex string) (*BlockWithTxs, error) {
+	var result BlockWithTxs
+	err := c.Do(ctx, "eth_getBlockByNumber", []interface{}{blockHex, true}, &result)
 	return &result, err
 }
 

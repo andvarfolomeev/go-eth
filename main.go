@@ -27,7 +27,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	block, err := client.BlockByNumber(ctx, *blockHex, false)
+	block, err := client.BlockWithTxsByNumber(ctx, *blockHex)
 
 	if err != nil {
 		log.Panic(err)
