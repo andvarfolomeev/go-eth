@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"flag"
@@ -8,7 +8,10 @@ import (
 )
 
 type ProgramOptions struct {
-	logLevel slog.Level
+	LogLevel     slog.Level
+	FetchWorkers int
+	DatabaseURL  string
+	RpcURL       string
 }
 
 type LogLevel string
@@ -48,13 +51,23 @@ func strToSlogLevel(s LogLevel) slog.Level {
 	return mapping[s]
 }
 
-func parseOptions() *ProgramOptions {
-	var logLevelStr LogLevel = LevelInfo
+func ParseOptions() *ProgramOptions {
+	var (
+		databaseURL string
+		rpcURL      string
+		logLevelStr LogLevel = LevelInfo
+	)
 	flag.Var(&logLevelStr, "log-level", "log level(debug, info, warn, error)")
+	fetchWorkers := flag.Int("fetch-workers", 5, "fetch worker counts")
+	flag.StringVar(&databaseURL, "pg-url", "", "PostgreSQL URL")
+	flag.StringVar(&rpcURL, "rpc-url", "https://ethereum-rpc.publicnode.com", "RPC URL")
 
 	flag.Parse()
 
 	return &ProgramOptions{
-		logLevel: strToSlogLevel(logLevelStr),
+		LogLevel:     strToSlogLevel(logLevelStr),
+		FetchWorkers: *fetchWorkers,
+		DatabaseURL:  databaseURL,
+		RpcURL:       rpcURL,
 	}
 }
