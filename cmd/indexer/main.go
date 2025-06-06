@@ -2,6 +2,10 @@ package main
 
 import (
 	"context"
+	"log/slog"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"go-eth/internal/config"
 	"go-eth/internal/jsonlogger"
@@ -14,8 +18,8 @@ func main() {
 	options := config.ParseOptions()
 	jsonlogger.SetupLoggerAsDefault(options.LogLevel)
 
-	ctx := context.Background()
-	defer ctx.Done()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
 	blockHexCh := make(chan string)
 	defer close(blockHexCh)
@@ -26,10 +30,10 @@ func main() {
 	db := intrastructure.NewDB(options.DatabaseURL)
 	client := rpc.New(options.RpcURL)
 
-	// poller := poller.NewRPCBlockPoller(client, time.Second)
+	// poller := poller.New(client, time.Second)
 	// poller.Poll(ctx, blockHexCh, errCh)
 
-	ix := indexer.NewIndexer(client, db)
+	ix := indexer.New(client, db)
 	ix.Start(ctx, options.FetchWorkers, blockHexCh, errCh)
 
 	for {
@@ -37,6 +41,8 @@ func main() {
 		case err := <-errCh:
 			panic(err)
 		case <-ctx.Done():
+			slog.Info("Stopping...")
+			os.Exit(0)
 		}
 	}
 }

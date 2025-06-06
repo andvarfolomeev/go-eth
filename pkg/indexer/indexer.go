@@ -15,7 +15,7 @@ type Indexer struct {
 	db     *sql.DB
 }
 
-func NewIndexer(client *rpc.Client, db *sql.DB) *Indexer {
+func New(client *rpc.Client, db *sql.DB) *Indexer {
 	return &Indexer{
 		client: client,
 		db:     db,

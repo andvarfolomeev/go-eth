@@ -6,11 +6,11 @@ import (
 	"go-eth/pkg/rpc"
 )
 
-type RpcMapper struct {
+type Mapper struct {
 	data map[int]rpc.Response
 }
 
-func New(resps []rpc.Response) *RpcMapper {
+func New(resps []rpc.Response) *Mapper {
 	data := make(map[int]rpc.Response)
 
 	for _, resp := range resps {
@@ -18,12 +18,12 @@ func New(resps []rpc.Response) *RpcMapper {
 		data[id] = resp
 	}
 
-	return &RpcMapper{
+	return &Mapper{
 		data: data,
 	}
 }
 
-func (mb RpcMapper) GetByID(id int) (rpc.Response, error) {
+func (mb Mapper) GetByID(id int) (rpc.Response, error) {
 	data, ok := mb.data[id]
 	if !ok {
 		return rpc.Response{}, errors.New(fmt.Sprintf("Failed to find response by id = %d", id))

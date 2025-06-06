@@ -2,15 +2,15 @@ package batcher
 
 import "go-eth/pkg/rpc"
 
-type RpcBatcher struct {
+type Batcher struct {
 	reqs []rpc.Request
 }
 
-func New() *RpcBatcher {
-	return &RpcBatcher{}
+func New() *Batcher {
+	return &Batcher{}
 }
 
-func (b *RpcBatcher) Add(method string, params ...any) int {
+func (b *Batcher) Add(method string, params ...any) int {
 	id := len(b.reqs) + 1
 	b.reqs = append(b.reqs, rpc.Request{
 		Jsonrpc: "2.0",
@@ -21,10 +21,10 @@ func (b *RpcBatcher) Add(method string, params ...any) int {
 	return id
 }
 
-func (b *RpcBatcher) Request() []rpc.Request {
+func (b *Batcher) Request() []rpc.Request {
 	return b.reqs
 }
 
-func (b *RpcBatcher) Clear() {
+func (b *Batcher) Clear() {
 	b.reqs = b.reqs[:0]
 }
